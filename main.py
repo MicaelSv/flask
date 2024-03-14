@@ -15,9 +15,24 @@ def getpacientes():
 
     cursor.execute('SELECT * FROM medico')
     medicos = cursor.fetchall()
+
+    list_medicos = list()
+
+    for medico in medicos:
+        list_medicos.append(
+            {
+                'id': medico[0],
+                'nome': medico[1],
+                'crm': medico[2],
+                'especialidade': medico[3],
+                'senha': medico[4]
+            }
+        )
+
+    #print(list_medicos)
     conn.close()
 
-    return jsonify(medicos)
+    return jsonify(list_medicos)
 
 
 @app.route('/add_medico', methods=['POST'])
