@@ -4,7 +4,7 @@ import sqlite3
 from model import create_db
 
 app = Flask(__name__)
-CORS(app, resources={r'/': {'origins': ''}})
+CORS(app, resources={r'/*': {'origins': '*'}})
 
 create_db()
 
