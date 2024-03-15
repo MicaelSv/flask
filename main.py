@@ -75,9 +75,10 @@ def getpacientes():
 @app.route('/filas', methods=['POST'])
 def verificar_cpf():
 
-    cpf = request.get_json()  #recebendo o cpf do front
-    #cpf = data['cpf']
+    data = request.get_json()  #recebendo o cpf do front
+    cpf = data['cpf']
 
+    print(cpf)
 
     # Verifica se o CPF já está na fila
     position_in_queue = 0
