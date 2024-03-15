@@ -73,6 +73,7 @@ def getpacientes():
 
 @app.route('/filas', methods=['POST'])
 def verificar_cpf():
+
     data = request.get_json()  #recebendo o cpf do front
     cpf = data['cpf']
 
@@ -82,8 +83,7 @@ def verificar_cpf():
     for index, (user_type, user_cpf) in enumerate(fila_espera.queue, start=1):
         if user_cpf == cpf:
             return jsonify({'message': 'Usuário já está na fila.',
-                            'position': index,
-                            'total_users': count_users_in_queue()}), 400
+                            'position': index}), 400
         position_in_queue = index
     
     #response = requests.get_json('') #recebendo os dados do banco do grupo de marcacao - qlqr coisa utilizar requests
@@ -93,7 +93,7 @@ def verificar_cpf():
 
 
     for usuario in usuarios:
-        if usuario['cpf'] == cpf:
+        if usuario['cpf'] == cpf: #verificando se o cpf digitado existe no banco de dados
             consulta_data = datetime.strptime(usuario['consultas'][0]['data'], '%Y-%m-%d').date()
             if consulta_data == datetime.today().date():
                 # Calcula a idade do usuário
@@ -105,8 +105,7 @@ def verificar_cpf():
                     fila_espera.put(('normal', cpf))
                 
                 return jsonify({'message': 'Usuário adicionado à fila.', 
-                                'position': fila_espera.qsize(),
-                                'total_users': count_users_in_queue()})
+                                'position': fila_espera.qsize()})
     
     return jsonify({'error': 'CPF não encontrado ou data da consulta não corresponde ao dia atual.'}), 400
 
