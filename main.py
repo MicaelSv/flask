@@ -3,7 +3,7 @@ from flask_cors import CORS
 from model import create_db
 from datetime import datetime 
 from queue import Queue
-import sqlite3, requests, json
+import sqlite3
 
 app = Flask(__name__)
 CORS(app, resources={r'/*': {'origins': '*'}})
