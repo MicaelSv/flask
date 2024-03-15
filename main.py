@@ -21,7 +21,7 @@ usuario7 = {
             {
                 "Médico": "Dr. João",
                 "crm": "12345",
-                "data": "14-03-2024",
+                "data": "2024-03-15",
                 "tipo de consulta": "Consulta de Rotina",
                 "tipo de pagamento": "Dinheiro"
             },
