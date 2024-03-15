@@ -129,8 +129,10 @@ def addpaciente():
 
     data = request.get_json()
 
+    print(data)
+
     # Verificar se o CRM já existe no banco de dados
-    cursor.execute('SELECT crm FROM medico WHERE crm = %s', (data['crm'],))
+    cursor.execute('SELECT crm FROM medico WHERE crm = ?', (data['crm'],))
     existing_patient = cursor.fetchone()
 
     if existing_patient:
@@ -139,7 +141,7 @@ def addpaciente():
         # Retorna um erro HTTP 400 (Bad Request) indicando a duplicação do CRM
 
     # Inserir o medico apenas se o CRM não estiver duplicado
-    cursor.execute('INSERT INTO medico (nome, crm, especialidade, senha) VALUES (%s, %s, %s, %s)',
+    cursor.execute('INSERT INTO medico (nome, crm, especialidade, senha) VALUES (?, ?, ?, ?)',
                    (data['nome'], data['crm'], data['especialidade'], data['senha']))
     conn.commit()
     conn.close()
