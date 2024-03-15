@@ -42,7 +42,8 @@ usuario8 = {
         ]
 }
 
-
+global total_users
+total_users = [usuario7, usuario8]
 
 @app.route('/medicos', methods=['GET'])
 def getpacientes():
