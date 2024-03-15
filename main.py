@@ -96,8 +96,10 @@ def verificar_cpf():
 
     for usuario in usuarios:
         if usuario['cpf'] == cpf: #verificando se o cpf digitado existe no banco de dados
+            print('chegoucpf')
             consulta_data = datetime.strptime(usuario['consultas'][0]['data'], '%Y-%m-%d').date()
             if consulta_data == datetime.today().date():
+                print('chegouconsulta')
                 # Calcula a idade do usuário
                 birth_date = datetime.strptime(usuario['birthDate'], '%Y-%m-%d').date()
                 idade = (datetime.today().date() - birth_date).days // 365
