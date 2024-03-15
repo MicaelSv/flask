@@ -16,12 +16,12 @@ fila_espera = Queue()
 #ENTRADA APENAS PARA TESTES
 usuario7 = {
         "cpf": "12345678900",
-        "birthDate": "1990-01-01",
+        "birthDate": "1980-01-01",
         "consultas": [
             {
                 "Médico": "Dr. João",
                 "crm": "12345",
-                "data": "2024-03-14",
+                "data": "14-03-2024",
                 "tipo de consulta": "Consulta de Rotina",
                 "tipo de pagamento": "Dinheiro"
             },
@@ -98,6 +98,8 @@ def verificar_cpf():
         if usuario['cpf'] == cpf: #verificando se o cpf digitado existe no banco de dados
             print('chegoucpf')
             consulta_data = datetime.strptime(usuario['consultas'][0]['data'], '%Y-%m-%d').date()
+            print(consulta_data)
+            print(datetime.today().date())
             if consulta_data == datetime.today().date():
                 print('chegouconsulta')
                 # Calcula a idade do usuário
