@@ -3,7 +3,7 @@ from flask_cors import CORS
 from model import create_db
 from datetime import datetime 
 from queue import Queue
-import sqlite3
+import sqlite3, json
 
 app = Flask(__name__)
 CORS(app, resources={r'/*': {'origins': '*'}})
@@ -48,7 +48,7 @@ usuario8 = {
 def getpacientes():
     conn = sqlite3.connect('atendimento.db')
     cursor = conn.cursor()
-
+    
     cursor.execute('SELECT * FROM medico')
     medicos = cursor.fetchall()
 
@@ -108,17 +108,6 @@ def verificar_cpf():
                                 'position': fila_espera.qsize()})
     
     return jsonify({'error': 'CPF não encontrado ou data da consulta não corresponde ao dia atual.'}), 400
-
-
-def count_users_in_queue():
-    count_preferential = 0
-    count_normal = 0
-    for user_type, _ in fila_espera.queue:
-        if user_type == 'preferencial':
-            count_preferential += 1
-        else:
-            count_normal += 1
-    return {'preferencial': count_preferential, 'normal': count_normal}
 
 
 @app.route('/add_medico', methods=['POST'])
