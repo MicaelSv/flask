@@ -85,7 +85,7 @@ def verificar_cpf():
     for index, (user_type, user_cpf) in enumerate(fila_espera.queue, start=1):
         if user_cpf == cpf:
             return jsonify({'message': 'Usuário já está na fila.',
-                            'position': index}), 400
+                            'position': index}), 200
         position_in_queue = index
     
     #response = requests.get_json('') #recebendo os dados do banco do grupo de marcacao - qlqr coisa utilizar requests
