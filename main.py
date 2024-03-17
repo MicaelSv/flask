@@ -21,7 +21,7 @@ usuario7 = {
             {
                 "Médico": "Dr. João",
                 "crm": "12345",
-                "data": "2024-03-15",
+                "data": "14-03-2024",
                 "tipo de consulta": "Consulta de Rotina",
                 "tipo de pagamento": "Dinheiro"
             },
@@ -40,6 +40,34 @@ usuario8 = {
                 "tipo de pagamento": "Pix"
             },
         ]
+}
+
+usuario9 = {
+    "cpf": "12345678916",
+    "birthDate": "1975-05-20",
+    "consultas": [
+        {
+            "Médico": "Dra. Maria",
+            "crm": "54321",
+            "data": "2024-03-16",
+            "tipo de consulta": "Consulta de Emergência",
+            "tipo de pagamento": "Cartão de Crédito"
+        },
+    ]
+}
+
+usuario10 = {
+    "cpf": "12345678924",
+    "birthDate": "1990-11-10",
+    "consultas": [
+        {
+            "Médico": "Dr. Pedro",
+            "crm": "67890",
+            "data": "2024-03-17",
+            "tipo de consulta": "Exame de Sangue",
+            "tipo de pagamento": "Boleto Bancário"
+        },
+    ]
 }
 
 global total_users
@@ -142,6 +170,9 @@ def addpaciente():
 
     return jsonify({'message': 'Médico adicionado com sucesso!'})
 
+@app.route('/usuarios', methods=['GET'])
+def get_usuarios():
+    return jsonify({'usuarios': [usuario7, usuario8, usuario9, usuario10]})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
