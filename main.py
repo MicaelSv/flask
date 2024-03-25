@@ -147,7 +147,7 @@ def obter_fila():
 @app.route('/chamar', methods=['GET'])
 def chamar_paciente():
     if not fila_espera.empty():
-        _, cpf = fila_espera.get()
+        _, _, cpf = fila_espera.get()
         pacientes_na_fila = [{'position': index, 'cpf': cpf} for index, (_, cpf) in enumerate(fila_espera.queue, start=1)]
         return jsonify({'message': f'Paciente {cpf} chamado.', 'patients': pacientes_na_fila})
     else:
