@@ -115,7 +115,7 @@ def verificar_cpf():
     # Verifica se o CPF já está na fila
     for _, _, user_cpf in fila_espera.queue:
         if user_cpf == cpf:
-            return jsonify({'message': 'Usuário já está na fila.'}), 400
+            return jsonify({'message': 'Usuário já está na fila.'}), 401
 
     for usuario in total_users:
         if usuario['cpf'] == cpf: # Verificando se o CPF digitado existe no banco de dados
@@ -134,7 +134,7 @@ def verificar_cpf():
                 
                 return jsonify({'message': 'Usuário adicionado à fila.', 'position': fila_espera.qsize()})
     
-    return jsonify({'error': 'CPF não encontrado ou data da consulta não corresponde ao dia atual.'}), 400
+    return jsonify({'error': 'CPF não encontrado ou data da consulta não corresponde ao dia atual.'}), 402
 
 
 @app.route('/paci', methods=['GET'])
