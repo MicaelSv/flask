@@ -148,7 +148,7 @@ def obter_fila():
 def chamar_paciente():
     if not fila_espera.empty():
         _, _, cpf = fila_espera.get()
-        pacientes_na_fila = [{'position': index, 'cpf': cpf} for index, (_, cpf) in enumerate(fila_espera.queue, start=1)]
+        pacientes_na_fila = [{'position': index, 'cpf': cpf} for index, (_, _, cpf) in enumerate(fila_espera.queue, start=1)]
         return jsonify({'message': f'Paciente {cpf} chamado.', 'patients': pacientes_na_fila})
     else:
         return jsonify({'error': 'A fila está vazia.'}), 400
