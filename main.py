@@ -3,6 +3,7 @@ from flask_cors import CORS
 from model import create_db
 from datetime import datetime 
 from queue import Queue
+from queue import PriorityQueue
 import sqlite3, json
 
 app = Flask(__name__)
@@ -11,7 +12,8 @@ CORS(app, resources={r'/*': {'origins': '*'}})
 create_db()
 
 # Fila de espera
-fila_espera = Queue()
+fila_espera = PriorityQueue()
+contador = 0
 
 #ENTRADA APENAS PARA TESTES
 usuario7 = {
@@ -21,7 +23,7 @@ usuario7 = {
             {
                 "Médico": "Dr. João",
                 "crm": "12345",
-                "data": "14-03-2024",
+                "data": "2024-03-25",
                 "tipo de consulta": "Consulta de Rotina",
                 "tipo de pagamento": "Dinheiro"
             },
@@ -30,12 +32,12 @@ usuario7 = {
 
 usuario8 = {
         "cpf": "12345678908",
-        "birthDate": "1980-01-01",
+        "birthDate": "1960-01-01",
         "consultas": [
             {
                 "Médico": "Dr. Bruno",
                 "crm": "22222",
-                "data": "2024-03-14",
+                "data": "2024-03-25",
                 "tipo de consulta": "Consulta de Rotina",
                 "tipo de pagamento": "Pix"
             },
@@ -49,7 +51,7 @@ usuario9 = {
         {
             "Médico": "Dra. Maria",
             "crm": "54321",
-            "data": "2024-03-16",
+            "data": "2024-03-25",
             "tipo de consulta": "Consulta de Emergência",
             "tipo de pagamento": "Cartão de Crédito"
         },
@@ -58,20 +60,23 @@ usuario9 = {
 
 usuario10 = {
     "cpf": "12345678924",
-    "birthDate": "1990-11-10",
+    "birthDate": "1960-11-10",
     "consultas": [
         {
             "Médico": "Dr. Pedro",
             "crm": "67890",
-            "data": "2024-03-17",
+            "data": "2024-03-25",
             "tipo de consulta": "Exame de Sangue",
             "tipo de pagamento": "Boleto Bancário"
         },
     ]
 }
 
+
 global total_users
-total_users = [usuario7, usuario8]
+total_users = [usuario7, usuario8, usuario8, usuario9, usuario10]
+
+
 
 @app.route('/medicos', methods=['GET'])
 def getpacientes():
@@ -102,46 +107,51 @@ def getpacientes():
 
 @app.route('/filas', methods=['POST'])
 def verificar_cpf():
-
+    global contador
     data = request.get_json()  #recebendo o cpf do front
     cpf = data['cpf']
-
-    print(cpf)
+    #print(cpf)
 
     # Verifica se o CPF já está na fila
-    position_in_queue = 0
-    for index, (user_type, user_cpf) in enumerate(fila_espera.queue, start=1):
+    for _, _, user_cpf in fila_espera.queue:
         if user_cpf == cpf:
-            return jsonify({'message': 'Usuário já está na fila.',
-                            'position': index}), 200
-        position_in_queue = index
-    
-    #response = requests.get_json('') #recebendo os dados do banco do grupo de marcacao - qlqr coisa utilizar requests
-    #usuarios = response.json()
-    
-    usuarios = [usuario7, usuario8]
+            return jsonify({'message': 'Usuário já está na fila.'}), 400
 
-
-    for usuario in usuarios:
-        if usuario['cpf'] == cpf: #verificando se o cpf digitado existe no banco de dados
-            print('chegoucpf')
+    for usuario in total_users:
+        if usuario['cpf'] == cpf: # Verificando se o CPF digitado existe no banco de dados
             consulta_data = datetime.strptime(usuario['consultas'][0]['data'], '%Y-%m-%d').date()
             print(consulta_data)
-            print(datetime.today().date())
             if consulta_data == datetime.today().date():
-                print('chegouconsulta')
                 # Calcula a idade do usuário
                 birth_date = datetime.strptime(usuario['birthDate'], '%Y-%m-%d').date()
                 idade = (datetime.today().date() - birth_date).days // 365
                 if idade >= 60:
-                    fila_espera.put(('preferencial', cpf))
+                    prioridade = 0
                 else:
-                    fila_espera.put(('normal', cpf))
+                    prioridade = 1
+                fila_espera.put((prioridade, contador, cpf))
+                contador += 1
                 
-                return jsonify({'message': 'Usuário adicionado à fila.', 
-                                'position': fila_espera.qsize()})
+                return jsonify({'message': 'Usuário adicionado à fila.', 'position': fila_espera.qsize()})
     
     return jsonify({'error': 'CPF não encontrado ou data da consulta não corresponde ao dia atual.'}), 400
+
+
+@app.route('/paci', methods=['GET'])
+def obter_fila():
+    pacientes_na_fila = [{'position': index, 'cpf': cpf} for index, (_, _, cpf) in enumerate(fila_espera.queue, start=1)]
+    return jsonify({'patients': pacientes_na_fila})
+
+#12345678916 - 12345678900 - 12345678924 - 12345678908
+
+@app.route('/chamar', methods=['GET'])
+def chamar_paciente():
+    if not fila_espera.empty():
+        _, cpf = fila_espera.get()
+        pacientes_na_fila = [{'position': index, 'cpf': cpf} for index, (_, cpf) in enumerate(fila_espera.queue, start=1)]
+        return jsonify({'message': f'Paciente {cpf} chamado.', 'patients': pacientes_na_fila})
+    else:
+        return jsonify({'error': 'A fila está vazia.'}), 400
 
 
 @app.route('/add_medico', methods=['POST'])
@@ -151,7 +161,7 @@ def addpaciente():
 
     data = request.get_json()
 
-    print(data)
+    #print(data)
 
     # Verificar se o CRM já existe no banco de dados
     cursor.execute('SELECT crm FROM medico WHERE crm = ?', (data['crm'],))
@@ -170,9 +180,13 @@ def addpaciente():
 
     return jsonify({'message': 'Médico adicionado com sucesso!'})
 
+
+
 @app.route('/usuarios', methods=['GET'])
 def get_usuarios():
     return jsonify({'usuarios': [usuario7, usuario8, usuario9, usuario10]})
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
